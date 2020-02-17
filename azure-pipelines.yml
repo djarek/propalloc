@@ -1,0 +1,55 @@
+# trigger:
+# - master
+
+# jobs:
+#   - job: Linux
+#     displayName: 'Linux'
+#     pool: Ubuntu-1804
+#     strategy:
+#       matrix:
+#         gccdefault_coverage:
+#           CMAKE_VARIANT: Debug
+#           CXXFLAGS: '-Wall -Wextra -Wconversion -pedantic -fprofile-arcs -fkeep-inline-functions --coverage'
+#           CXX: g++
+#           CC: gcc
+#           SKIP_COVERAGE: 'false'
+#         gcc7debug:
+#           CMAKE_VARIANT: Debug
+#           CXX: g++-7
+#           CC: gcc-7
+#           CXXFLAGS: -Wall -Wextra -Wconversion -pedantic
+#         gcc8release:
+#           CMAKE_VARIANT: Release
+#           CXX: g++-8
+#           CC: gcc-8
+#           CXXFLAGS: -Wall -Wextra -Wconversion -pedantic
+#         gcc8asan:
+#           CMAKE_VARIANT: Debug
+#           CXX: g++-8
+#           CC: gcc-8
+#           CXXFLAGS: -Wall -Wextra -Wconversion -pedantic -fsanitize=address,undefined
+#         clangdebug:
+#           CMAKE_VARIANT: Debug
+#           CXX: clang++
+#           CC: clang
+#           CXXFLAGS: -Wall -Wextra -Wconversion -pedantic
+#         clangasan:
+#           CMAKE_VARIANT: Debug
+#           CXX: clang++
+#           CC: clang
+#           CXXFLAGS: -Wall -Wextra -Wconversion -pedantic -fsanitize=address,undefined -pthread
+#         clangrelease:
+#           CMAKE_VARIANT: Release
+#           CXX: clang++
+#           CC: clang
+#           CXXFLAGS: -Wall -Wextra -Wconversion -pedantic
+#     steps:
+#       - script: cmake -GNinja -H. -Bbuild -DCMAKE_TOOLCHAIN_FILE="~/vcpkg/scripts/buildsystems/vcpkg.cmake" -DCMAKE_CXX_CLANG_TIDY="$(which clang-tidy);-header-filter=$(pwd)/include/\*" -DCMAKE_BUILD_TYPE=$CMAKE_VARIANT
+#         displayName: 'Configure'
+#       - script: cmake --build build
+#         displayName: Build
+#       - script: cd build && ctest --output-on-failure
+#         displayName: 'Run tests'
+#       - script: ./tools/coverage.sh && curl -s https://codecov.io/bash -o codecov && bash ./codecov -X gcov -f build/coverage.info -t $(CODECOV_TOKEN)
+#         displayName: 'Collect coverage'
+#         condition: and(succeeded(), eq(variables['SKIP_COVERAGE'], 'false'))
